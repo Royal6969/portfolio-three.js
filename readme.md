@@ -24,7 +24,7 @@ npx tailwindcss init
 npm install --legacy-peer-deps @react-three/fiber @react-three/drei maath react-tilt react-vertical-timeline-component @emailjs/browser framer-motion react-router-dom
 ```
 
-
+**Nota:** *--legacy-peer-deps* lo usamos cuando vamos a utilizar algún paquete antiguo, como es en este caso el *react-tilt*, de modo que esto nos provee una lista de todos los paquetes que necesitaríamos para que la compatibilidad sea correcta
 
 ## Webgrafía y enlaces de interés
 
