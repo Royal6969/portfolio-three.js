@@ -90,4 +90,4 @@ const ProjectCard = ({ index, name, description, tags, image, source_code_link }
 }
 
 
-export default SectionWrapper(Works, 'works')
+export default SectionWrapper(Works, 'work')
