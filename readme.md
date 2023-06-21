@@ -1086,10 +1086,321 @@ const ProjectCard = ({ index, name, description, tags, image, source_code_link }
 export default SectionWrapper(Works, 'works')
 ```
 
-## 2.7. Feedbacks
+## 2.7. Feedbacks.jsx
 
 ```jsx
+import { motion } from "framer-motion"
+import { tailwind_styles } from '../utils/tailwind_styles'
+import { SectionWrapper } from '../HOC'
+import { fadeIn, textVariant } from "../utils/framer-motion"
+import { testimonials } from '../utils/constants'
 
+const Feedbacks = () => {
+  return (
+    <div className="mt-12-bg-black-100 rounded-[20px]">
+      <div className={`${tailwind_styles.padding} bg-tertiary rounded-2xl min-h-[300px]`}>
+        <motion.div variants={textVariant()}>
+          <p className={tailwind_styles.sectionSubText}>What others says</p>
+          <h2 className={tailwind_styles.sectionHeadText}>Testimonials</h2>
+        </motion.div>
+      </div>
+
+      <div className={`${tailwind_styles.paddingX} -mt-20 pb-14 flex flex-wrap gap-7`}>
+        {testimonials.map((testimonial, index) => (
+          <FeedbackCard 
+            key={testimonial.name}
+            index={index}
+            {...testimonial}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+const FeedbackCard = ({ index, testimonial, name, designation, company, image }) => {
+  return (
+    <motion.div
+      className="bg-black-200 p-10 rounded-3xl xs:w-[320px] w-full"
+      variants={fadeIn('', 'spring', index * 0.5, 0.75)}
+    >
+      <p className="text-white font-black text-[48px]">"</p>
+      
+      <div className="mt-1">
+        <p className="text-white tracking-wider text-[18px]">
+          {testimonial}
+        </p>
+
+        <div className="mt-7 flex justify-between items-center gap-1">
+          <div className="flex-1 flex flex-col">
+            <p className="text-white font-medium text-[16px]">
+              <span className="blue-text-gradient">@</span> {name}
+            </p>
+            <p className="mt-1 text-secondary text-[12px]">
+              {designation} of {company}
+            </p>
+          </div>
+
+          <img 
+            src={image}
+            alt={`feedback-by-${name}`}
+            className="w-10 h-10 rounded-full object-cover"
+          />
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+export default SectionWrapper(Feedbacks, 'feedbacks')
+```
+
+## 2.8. components --> Contact.jsx
+
+```jsx
+import { useState, useRef } from 'react'
+import { motion } from 'framer-motion'
+import emailjs from '@emailjs/browser'
+import { tailwind_styles } from '../utils/tailwind_styles'
+import { EarthCanvas } from './canvas'
+import { SectionWrapper } from '../HOC'
+import { slideIn } from '../utils/framer-motion'
+
+const Contact = () => {
+  const contactFormRef = useRef();
+
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const handleFormChange = (event) => {
+    const { name, value } = event.target;
+
+    setContactForm({
+      ...contactForm,
+      [name]: value
+    });
+  }
+
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+    setIsLoading(true);
+
+    emailjs.send(
+      'service_wlx9a41',
+      'template_jgaxawe',
+      {
+        from_name: contactForm.name,
+        to_name: 'Sergio',
+        from_email: contactForm.email,
+        to_email: 'sergiodiazcampos@gmail.com',
+        message: contactForm.message
+      },
+      'gf8dryPUX0DRAMY-z'
+    
+    ).then(() => {
+      setIsLoading(false);
+      alert('Thank you. I will get back to you as soon as possible.');
+
+      setContactForm({
+        name: '',
+        email: '',
+        message: ''
+      })
+    
+    }, (error) => {
+      setIsLoading(false);
+      console.log(error);
+      alert('Something went wrong.');
+    })
+  }
+
+  return (
+    <div className='xl:mt-12 xl:flex-row flex-col-reverse flex gap-10 overflow-hidden'>
+      <motion.div
+        className='flex-[0.75] bg-black-100 p-8 rounded-2xl'
+        variants={slideIn('left', 'tween', 0.2, 1)}
+      >
+        <p className={tailwind_styles.sectionSubText}>Get in touch</p>
+        <h3 className={tailwind_styles.sectionHeadText}>Contact</h3>
+
+        <form
+          ref={contactFormRef}
+          onSubmit={handleFormSubmit}
+          className='mt-12 flex flex-col gap-8'
+        >
+          <label className='flex flex-col'>
+            <span className='text-white font-medium mb-4'>Your name</span>
+            <input 
+              type='text' 
+              name='name' 
+              value={contactForm.name} 
+              onChange={handleFormChange} 
+              placeholder="What's your name?" 
+              className='bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium'
+            />
+          </label>
+
+          <label className='flex flex-col'>
+            <span className='text-white font-medium mb-4'>Your email</span>
+            <input 
+              type='email' 
+              name='email' 
+              value={contactForm.email} 
+              onChange={handleFormChange} 
+              placeholder="What's your email?" 
+              className='bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium'
+            />
+          </label>
+
+          <label className='flex flex-col'>
+            <span className='text-white font-medium mb-4'>Your message</span>
+            <textarea
+              rows='7'
+              style={{ resize: 'none' }}
+              // type='text' 
+              name='message' 
+              value={contactForm.message} 
+              onChange={handleFormChange} 
+              placeholder="What do you want to say?" 
+              className='bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium'
+            />
+          </label>
+
+          <button
+            type='submit'
+            className='bg-tertiary py-3 px-8 outline-none w-fit text-white font-bold shadow-md shadow-primary rounded-xl'
+          >
+            {isLoading ? 'Sending...' : 'Send'}
+          </button>
+        </form>
+      </motion.div>
+
+      <motion.div
+        className='xl:flex-1 xl:h-auto md:h-[550px] h-[350px]'
+        variants={slideIn('right', 'tween', 0.2, 1)}
+      >
+        <EarthCanvas />
+      </motion.div>
+    </div>
+  )
+}
+
+export default SectionWrapper(Contact, 'contact')
+```
+
+### 2.8.1. Earth.jsx
+
+```jsx
+import { Suspense } from "react"
+import { Canvas } from "@react-three/fiber"
+import { 
+  OrbitControls,
+  Preload,
+  useGLTF 
+} from "@react-three/drei"
+import CanvasLoader from '../Loader'
+
+const Earth = () => {
+  const earthGltfModel = useGLTF('./planet/scene.gltf');
+
+  return (
+    <primitive 
+      object={earthGltfModel.scene}
+      scale={2.5}
+      position-y={0}
+      rotation-y={0}
+    />
+  )
+}
+
+const EarthCanvas = () => {
+  return (
+    <Canvas
+      shadows
+      frameloop="demand"
+      gl={{ preserveDrawingBuffer: true }}
+      camera={{
+        fov: 45,
+        near: 0.1,
+        far: 200,
+        position: [-4, 3, 6]
+      }}
+    >
+      <Suspense fallback={<CanvasLoader />} >
+        <OrbitControls 
+          autoRotate
+          enableZoom={false}
+          minPolarAngle={Math.PI / 2}
+          maxPolarAngle={Math.PI / 2}
+        />
+
+        <Earth />
+      </Suspense>
+    </Canvas>
+  )
+}
+
+export default EarthCanvas
+```
+
+### 2.8.2. Stars.jsx
+
+```jsx
+import { useRef, Suspense } from 'react'
+import { Canvas, useFrame } from '@react-three/fiber'
+import { Points, PointMaterial, Preload } from '@react-three/drei'
+import * as random from 'maath/random/dist/maath-random.esm'
+
+const Stars = (props) => {
+  const ref = useRef();
+  const sphere = random.inSphere(new Float32Array(5000), { radius: 1.2 });
+
+  useFrame((state, delta) => {
+    ref.current.rotation.x -= delta / 10;
+    ref.current.rotation.y -= delta / 15;
+  });
+
+  return (
+    <group rotation={[0, 0, Math.PI / 4]}>
+      <Points 
+        ref={ref}
+        positions={sphere}
+        stride={3}
+        frustumCulled
+        {...props}
+      >
+        <PointMaterial 
+          transparent
+          color='#f272c8'
+          size={0.002}
+          sizeAttenuation={true}
+          depthWrite={false}
+        />
+      </Points>
+    </group>
+  )
+}
+
+const StarsCanvas = () => {
+  return (
+    <div className="w-full h-auto absolute inset-0 z-[-1]">
+      <Canvas camera={{ position: [0, 0, 1] }}>
+        <Suspense fallback={null}>
+          <Stars />
+        </Suspense>
+
+        <Preload all />
+      </Canvas>
+    </div>
+  )
+}
+
+export default StarsCanvas
 ```
 
 ## Webgrafía y enlaces de interés
